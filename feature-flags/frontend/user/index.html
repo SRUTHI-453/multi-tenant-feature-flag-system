@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlagSys — Feature Check</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Noto+Sans+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#fafaf8;--card:#fff;--border:#e8e6e0;--text:#1c1c1c;--muted:#888580;--accent:#2563eb;--green:#16a34a;--red:#dc2626;--green-bg:#f0fdf4;--red-bg:#fef2f2;--sans:'Syne',sans-serif;--mono:'Noto Sans Mono',monospace;}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+    .brand{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-family:var(--mono);margin-bottom:12px}
+    h1{font-size:38px;font-weight:800;letter-spacing:-1px;margin-bottom:8px;text-align:center}
+    .sub{color:var(--muted);font-size:15px;margin-bottom:40px;text-align:center}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:36px;width:100%;max-width:460px;box-shadow:0 2px 16px rgba(0,0,0,.04)}
+    .field{margin-bottom:20px}
+    label{display:block;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+    select,input[type=text]{width:100%;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:var(--mono);font-size:14px;padding:10px 14px;border-radius:4px;outline:none;transition:border-color .15s}
+    select:focus,input:focus{border-color:var(--accent)}
+    .btn{width:100%;background:var(--text);color:#fff;border:none;padding:12px;font-family:var(--sans);font-weight:700;font-size:15px;border-radius:4px;cursor:pointer;transition:opacity .15s;margin-top:4px}
+    .btn:hover{opacity:.85}
+    .btn:disabled{opacity:.5;cursor:default}
+    .result{margin-top:24px;border-radius:6px;padding:20px 22px;display:none;animation:slide-in .2s ease}
+    @keyframes slide-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .result.enabled{background:var(--green-bg);border:1.5px solid #bbf7d0}
+    .result.disabled{background:var(--red-bg);border:1.5px solid #fecaca}
+    .result.not-found{background:#fffbeb;border:1.5px solid #fde68a}
+    .result-icon{font-size:28px;margin-bottom:8px}
+    .result-title{font-size:18px;font-weight:700}
+    .result-detail{font-size:13px;color:var(--muted);margin-top:4px;font-family:var(--mono)}
+    .flag-key-display{display:inline-block;background:rgba(0,0,0,.06);border-radius:3px;padding:1px 7px;font-family:var(--mono)}
+    .alert{padding:9px 13px;border-radius:4px;font-size:13px;margin-bottom:14px;background:#fef2f2;color:var(--red);border:1px solid #fecaca}
+    footer{margin-top:32px;font-size:12px;color:var(--muted);font-family:var(--mono);letter-spacing:.5px}
+  </style>
+</head>
+<body>
+  <div class="brand">FlagSys</div>
+  <h1>Feature Check</h1>
+  <p class="sub">Look up whether a feature is enabled for your organization</p>
+  <div class="card">
+    <div id="alert"></div>
+    <div class="field">
+      <label>Organization</label>
+      <select id="org-select"><option value="">Loading...</option></select>
+    </div>
+    <div class="field">
+      <label>Feature Key</label>
+      <input type="text" id="feature-key" placeholder="e.g. dark_mode" autocomplete="off"/>
+    </div>
+    <button class="btn" id="check-btn" onclick="checkFlag()">Check Feature →</button>
+    <div class="result" id="result">
+      <div class="result-icon" id="r-icon"></div>
+      <div class="result-title" id="r-title"></div>
+      <div class="result-detail" id="r-detail"></div>
+    </div>
+  </div>
+  <footer>No login required · Read-only access</footer>
+<script>
+  const API='';
+
+  async function loadOrgs(){
+    try{
+      const res=await fetch(`${API}/api/flags/organizations`);
+      const data=await res.json();
+      const sel=document.getElementById('org-select');
+      sel.innerHTML=data.length
+        ?`<option value="">Select your organization...</option>`+data.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')
+        :`<option value="">No organizations found</option>`;
+    }catch{document.getElementById('org-select').innerHTML='<option value="">Failed to load</option>';}
+  }
+
+  async function checkFlag(){
+    const orgId=document.getElementById('org-select').value;
+    const featureKey=document.getElementById('feature-key').value.trim();
+    const al=document.getElementById('alert');
+    const res=document.getElementById('result');
+    al.innerHTML='';res.style.display='none';
+    if(!orgId){al.innerHTML='<div class="alert">Please select an organization</div>';return;}
+    if(!featureKey){al.innerHTML='<div class="alert">Please enter a feature key</div>';return;}
+    const btn=document.getElementById('check-btn');
+    btn.disabled=true;btn.textContent='Checking...';
+    try{
+      const r=await fetch(`${API}/api/flags/check?organizationId=${encodeURIComponent(orgId)}&featureKey=${encodeURIComponent(featureKey)}`);
+      const data=await r.json();
+      if(!r.ok){al.innerHTML=`<div class="alert">${esc(data.error)}</div>`;}
+      else showResult(data);
+    }catch{al.innerHTML='<div class="alert">Network error — please try again</div>';}
+    finally{btn.disabled=false;btn.textContent='Check Feature →';}
+  }
+
+  function showResult({enabled,exists,featureKey,organizationName}){
+    const el=document.getElementById('result');
+    const icon=document.getElementById('r-icon');
+    const title=document.getElementById('r-title');
+    const detail=document.getElementById('r-detail');
+    if(!exists){
+      el.className='result not-found';icon.textContent='🔍';title.textContent='Flag not found';
+      detail.innerHTML=`<span class="flag-key-display">${esc(featureKey)}</span> does not exist in <strong>${esc(organizationName)}</strong>`;
+    }else if(enabled){
+      el.className='result enabled';icon.textContent='✅';title.textContent='Feature is Enabled';
+      detail.innerHTML=`<span class="flag-key-display">${esc(featureKey)}</span> is <strong>ON</strong> for <strong>${esc(organizationName)}</strong>`;
+    }else{
+      el.className='result disabled';icon.textContent='🚫';title.textContent='Feature is Disabled';
+      detail.innerHTML=`<span class="flag-key-display">${esc(featureKey)}</span> is <strong>OFF</strong> for <strong>${esc(organizationName)}</strong>`;
+    }
+    el.style.display='block';
+  }
+
+  document.getElementById('feature-key').addEventListener('keydown',e=>{if(e.key==='Enter')checkFlag();});
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  loadOrgs();
+</script>
+</body>
+</html>

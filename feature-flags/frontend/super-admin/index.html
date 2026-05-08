@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlagSys — Super Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f4f3ef;--surface:#fff;--border:#e0ddd5;--accent:#1a1a2e;--accent2:#4f46e5;--text:#1a1a2e;--muted:#7a7870;--success:#16a34a;--danger:#dc2626;--mono:'IBM Plex Mono',monospace;--sans:'DM Sans',sans-serif;}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh}
+    header{background:var(--accent);color:#fff;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:52px}
+    .logo{font-family:var(--mono);font-weight:600;font-size:16px;letter-spacing:1px}
+    .logo em{color:#a5b4fc;font-style:normal}
+    .header-right{display:flex;align-items:center;gap:16px;font-size:12px;color:#a5b4fc}
+    .btn-logout{background:none;border:1px solid #4f46e5;color:#a5b4fc;padding:4px 12px;cursor:pointer;font-family:var(--sans);font-size:11px;transition:all .15s;border-radius:3px}
+    .btn-logout:hover{background:#4f46e5;color:#fff}
+    .tabs{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 40px}
+    .tab{padding:14px 20px;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);transition:all .15s}
+    .tab.active{border-color:var(--accent2);color:var(--accent2)}
+    main{max-width:900px;margin:0 auto;padding:32px 40px}
+    .view{display:none}.view.active{display:block}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:32px;max-width:440px;margin:0 auto}
+    .card-title{font-size:22px;font-weight:700;margin-bottom:4px}
+    .card-sub{color:var(--muted);font-size:13px;margin-bottom:28px}
+    .field{margin-bottom:18px}
+    label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+    input{width:100%;border:1px solid var(--border);padding:9px 12px;font-family:var(--sans);font-size:14px;background:var(--bg);color:var(--text);outline:none;border-radius:3px;transition:border-color .15s}
+    input:focus{border-color:var(--accent2)}
+    .btn{background:var(--accent2);color:#fff;border:none;padding:10px 20px;font-family:var(--sans);font-weight:700;font-size:14px;cursor:pointer;border-radius:3px;transition:opacity .15s;width:100%}
+    .btn:hover{opacity:.88}
+    .alert{padding:9px 13px;border-radius:3px;font-size:13px;margin-bottom:14px}
+    .alert.error{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
+    .alert.success{background:#f0fdf4;color:var(--success);border:1px solid #bbf7d0}
+    .dash-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .dash-toolbar h3{font-size:18px;font-weight:700}
+    .btn-sm{background:var(--accent2);color:#fff;border:none;padding:7px 16px;font-family:var(--sans);font-weight:600;font-size:13px;cursor:pointer;border-radius:3px;transition:opacity .15s}
+    .btn-sm:hover{opacity:.88}
+    .create-box{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px 24px;margin-bottom:24px}
+    .create-row{display:flex;gap:10px;align-items:flex-end}
+    .create-row .field{margin-bottom:0;flex:1}
+    .orgs-list{display:flex;flex-direction:column;gap:10px}
+    .org-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;transition:box-shadow .15s}
+    .org-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .org-name{font-size:14px;font-weight:600}
+    .org-id{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:3px}
+    .org-date{font-size:12px;color:var(--muted)}
+    .count-badge{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:2px 10px;font-size:12px;color:var(--muted);font-family:var(--mono)}
+    .empty-state{text-align:center;padding:48px;color:var(--muted);font-size:13px;background:var(--surface);border:1px dashed var(--border);border-radius:4px}
+
+    /* ── POPUP MODAL ─────────────────────────────────────────────────────────── */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:100;animation:fade-in .2s ease}
+    .modal-backdrop.open{display:flex}
+    @keyframes fade-in{from{opacity:0}to{opacity:1}}
+    .modal{background:var(--surface);border-radius:8px;padding:32px;width:100%;max-width:420px;border:1px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,.12);animation:slide-up .2s ease}
+    @keyframes slide-up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+    .modal-icon{font-size:32px;margin-bottom:12px}
+    .modal-title{font-size:20px;font-weight:700;margin-bottom:6px}
+    .modal-sub{font-size:13px;color:var(--muted);margin-bottom:24px}
+    .modal-org-name{display:inline-block;background:#eef2ff;color:var(--accent2);font-family:var(--mono);font-size:13px;padding:3px 10px;border-radius:4px;margin-bottom:20px}
+
+    /* Link rows */
+    .link-card{border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;background:var(--bg)}
+    .link-card-left{display:flex;align-items:center;gap:10px}
+    .link-icon{width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px}
+    .link-icon.admin{background:#eef2ff}
+    .link-icon.user{background:#f0fdf4}
+    .link-label{font-size:13px;font-weight:600}
+    .link-desc{font-size:11px;color:var(--muted);margin-top:1px}
+    .link-btn{font-size:12px;font-weight:600;color:var(--accent2);background:none;border:1px solid #c7d2fe;padding:5px 12px;border-radius:4px;cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
+    .link-btn:hover{background:#eef2ff}
+    .link-btn.green{color:var(--success);border-color:#bbf7d0}
+    .link-btn.green:hover{background:#f0fdf4}
+
+    .modal-close{width:100%;margin-top:16px;background:none;border:1px solid var(--border);color:var(--muted);padding:9px;border-radius:4px;font-family:var(--sans);font-size:13px;cursor:pointer;transition:all .15s}
+    .modal-close:hover{border-color:var(--accent2);color:var(--accent2)}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Flag<em>Sys</em> // SUPER ADMIN</div>
+  <div class="header-right">
+    <span id="header-email"></span>
+    <button class="btn-logout" id="logout-btn" onclick="logout()" style="display:none">Logout</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" id="tab-login">Account</div>
+  <div class="tab" id="tab-orgs" style="display:none" onclick="showTab('orgs')">Organizations</div>
+</div>
+
+<main>
+  <!-- LOGIN -->
+  <div class="view active" id="view-login">
+    <div class="card">
+      <div class="card-title">Sign In</div>
+      <div class="card-sub">Access the Super Admin dashboard</div>
+      <div id="login-alert"></div>
+      <div class="field"><label>Email</label><input type="email" id="l-email" placeholder="superadmin@flagsys.io"/></div>
+      <div class="field"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••"/></div>
+      <button class="btn" onclick="login()">Sign In</button>
+    </div>
+  </div>
+
+  <!-- ORGANIZATIONS -->
+  <div class="view" id="view-orgs">
+    <div class="dash-toolbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <h3>Organizations</h3>
+        <span class="count-badge" id="org-count">0</span>
+      </div>
+    </div>
+
+    <div class="create-box">
+      <label style="display:block;margin-bottom:12px">Create New Organization</label>
+      <div id="create-alert"></div>
+      <div class="create-row">
+        <div class="field">
+          <label>Organization Name</label>
+          <input type="text" id="org-name" placeholder="e.g. Acme Corp"/>
+        </div>
+        <button class="btn-sm" onclick="createOrg()">+ Create</button>
+      </div>
+    </div>
+
+    <div class="orgs-list" id="orgs-list">
+      <div class="empty-state">No organizations yet. Create your first one →</div>
+    </div>
+  </div>
+</main>
+
+<!-- SUCCESS POPUP -->
+<div class="modal-backdrop" id="success-modal">
+  <div class="modal">
+    <div class="modal-icon">🎉</div>
+    <div class="modal-title">Organization Created!</div>
+    <div class="modal-sub">Share these links with your team to get started</div>
+    <div class="modal-org-name" id="modal-org-name"></div>
+
+    <!-- Org Admin Link -->
+    <div class="link-card">
+      <div class="link-card-left">
+        <div class="link-icon admin">🛠️</div>
+        <div>
+          <div class="link-label">Org Admin Panel</div>
+          <div class="link-desc">Manage feature flags for this organization</div>
+        </div>
+      </div>
+      <a class="link-btn" href="http://localhost:3000/admin" target="_blank">Open →</a>
+    </div>
+
+    <!-- End User Link -->
+    <div class="link-card">
+      <div class="link-card-left">
+        <div class="link-icon user">👤</div>
+        <div>
+          <div class="link-label">End User Portal</div>
+          <div class="link-desc">Check if a feature is enabled for your org</div>
+        </div>
+      </div>
+      <a class="link-btn green" href="http://localhost:3000/user" target="_blank">Open →</a>
+    </div>
+
+    <button class="modal-close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+  const API='';
+  let token=localStorage.getItem('sa_token');
+  if(token){try{JSON.parse(atob(token.split('.')[1]));enterDashboard();}catch{token=null;}}
+
+  async function login(){
+    const email=document.getElementById('l-email').value.trim();
+    const pass=document.getElementById('l-pass').value;
+    const al=document.getElementById('login-alert');al.innerHTML='';
+    try{
+      const res=await fetch(`${API}/api/super-admin/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+      const data=await res.json();
+      if(!res.ok){showAlert(al,data.error,'error');return;}
+      token=data.token;localStorage.setItem('sa_token',token);
+      enterDashboard();
+    }catch{showAlert(al,'Network error','error');}
+  }
+
+  function logout(){
+    localStorage.removeItem('sa_token');token=null;
+    document.getElementById('tab-orgs').style.display='none';
+    document.getElementById('logout-btn').style.display='none';
+    document.getElementById('header-email').textContent='';
+    showTab('login');
+  }
+
+  function enterDashboard(){
+    try{const p=JSON.parse(atob(token.split('.')[1]));document.getElementById('header-email').textContent=p.email;}catch{}
+    document.getElementById('logout-btn').style.display='';
+    document.getElementById('tab-orgs').style.display='';
+    showTab('orgs');
+    loadOrgs();
+  }
+
+  async function loadOrgs(){
+    try{
+      const res=await fetch(`${API}/api/super-admin/organizations`,{headers:{Authorization:`Bearer ${token}`}});
+      if(res.status===401){logout();return;}
+      renderOrgs(await res.json());
+    }catch{}
+  }
+
+  function renderOrgs(orgs){
+    document.getElementById('org-count').textContent=orgs.length;
+    const el=document.getElementById('orgs-list');
+    if(!orgs.length){el.innerHTML='<div class="empty-state">No organizations yet. Create your first one →</div>';return;}
+    el.innerHTML=orgs.map(o=>`
+      <div class="org-card">
+        <div>
+          <div class="org-name">${esc(o.name)}</div>
+          <div class="org-id">${esc(o._id)}</div>
+        </div>
+        <div class="org-date">Created ${new Date(o.createdAt).toLocaleDateString()}</div>
+      </div>`).join('');
+  }
+
+  async function createOrg(){
+    const name=document.getElementById('org-name').value.trim();
+    const al=document.getElementById('create-alert');al.innerHTML='';
+    if(!name){showAlert(al,'Organization name is required','error');return;}
+    try{
+      const res=await fetch(`${API}/api/super-admin/organizations`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({name})});
+      const data=await res.json();
+      if(!res.ok){showAlert(al,data.error,'error');return;}
+      document.getElementById('org-name').value='';
+      loadOrgs();
+      // Show popup with links
+      openModal(data.name);
+    }catch{showAlert(al,'Network error','error');}
+  }
+
+  function openModal(orgName){
+    document.getElementById('modal-org-name').textContent=`🏢 ${orgName}`;
+    document.getElementById('success-modal').classList.add('open');
+  }
+
+  function closeModal(){
+    document.getElementById('success-modal').classList.remove('open');
+  }
+
+  // Close modal on backdrop click
+  document.getElementById('success-modal').addEventListener('click',function(e){
+    if(e.target===this)closeModal();
+  });
+
+  function showTab(tab){
+    ['login','orgs'].forEach(t=>{
+      document.getElementById(`view-${t}`).classList.toggle('active',t===tab);
+      const tabEl=document.getElementById(`tab-${t}`);
+      if(tabEl)tabEl.classList.toggle('active',t===tab);
+    });
+  }
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&document.getElementById('view-login').classList.contains('active'))login();
+  });
+
+  function showAlert(el,msg,type){el.innerHTML=`<div class="alert ${type}">${esc(msg)}</div>`;}
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+</script>
+</body>
+</html>

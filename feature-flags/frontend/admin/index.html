@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlagSys — Org Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f4f3ef;--surface:#fff;--border:#e0ddd5;--accent:#1a1a2e;--accent2:#4f46e5;--text:#1a1a2e;--muted:#7a7870;--success:#16a34a;--danger:#dc2626;--mono:'IBM Plex Mono',monospace;--sans:'DM Sans',sans-serif;}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh}
+    header{background:var(--accent);color:#fff;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:52px}
+    .logo{font-family:var(--mono);font-weight:600;font-size:16px;letter-spacing:1px}
+    .logo em{color:#a5b4fc;font-style:normal}
+    .header-right{display:flex;align-items:center;gap:16px;font-size:12px;color:#a5b4fc}
+    .btn-logout{background:none;border:1px solid #4f46e5;color:#a5b4fc;padding:4px 12px;cursor:pointer;font-family:var(--sans);font-size:11px;transition:all .15s}
+    .btn-logout:hover{background:#4f46e5;color:#fff}
+    .tabs{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 40px}
+    .tab{padding:14px 20px;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);transition:all .15s}
+    .tab.active{border-color:var(--accent2);color:var(--accent2)}
+    main{max-width:900px;margin:0 auto;padding:32px 40px}
+    .view{display:none}.view.active{display:block}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:32px;max-width:440px;margin:0 auto}
+    .card-title{font-size:22px;font-weight:700;margin-bottom:4px}
+    .card-sub{color:var(--muted);font-size:13px;margin-bottom:28px}
+    .field{margin-bottom:18px}
+    label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+    input,select{width:100%;border:1px solid var(--border);padding:9px 12px;font-family:var(--sans);font-size:14px;background:var(--bg);color:var(--text);outline:none;border-radius:3px;transition:border-color .15s}
+    input:focus,select:focus{border-color:var(--accent2)}
+    .btn{background:var(--accent2);color:#fff;border:none;padding:10px 20px;font-family:var(--sans);font-weight:700;font-size:14px;cursor:pointer;border-radius:3px;transition:opacity .15s;width:100%}
+    .btn:hover{opacity:.88}
+    .btn.outline{background:none;border:1px solid var(--accent2);color:var(--accent2)}
+    .link-row{text-align:center;margin-top:16px;font-size:13px;color:var(--muted)}
+    .link-row a{color:var(--accent2);cursor:pointer;text-decoration:none}
+    .link-row a:hover{text-decoration:underline}
+    .alert{padding:9px 13px;border-radius:3px;font-size:13px;margin-bottom:14px}
+    .alert.error{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
+    .alert.success{background:#f0fdf4;color:var(--success);border:1px solid #bbf7d0}
+    .org-badge{display:inline-flex;align-items:center;gap:6px;background:#eef2ff;border:1px solid #c7d2fe;color:var(--accent2);font-family:var(--mono);font-size:12px;padding:3px 10px;border-radius:2px;margin-bottom:24px}
+    .flags-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .flags-toolbar h3{font-size:18px;font-weight:700}
+    .btn-sm{background:var(--accent2);color:#fff;border:none;padding:7px 16px;font-family:var(--sans);font-weight:600;font-size:13px;cursor:pointer;border-radius:3px;transition:opacity .15s}
+    .btn-sm:hover{opacity:.88}
+    .flags-list{display:flex;flex-direction:column;gap:10px}
+    .flag-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+    .flag-key{font-family:var(--mono);font-size:14px;font-weight:600}
+    .flag-meta{font-size:11px;color:var(--muted);margin-top:2px}
+    .flag-actions{display:flex;align-items:center;gap:12px}
+    .toggle{position:relative;width:42px;height:24px}
+    .toggle input{opacity:0;width:0;height:0}
+    .slider{position:absolute;inset:0;background:#d1d5db;border-radius:24px;cursor:pointer;transition:background .2s}
+    .slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:transform .2s}
+    input:checked+.slider{background:var(--success)}
+    input:checked+.slider::before{transform:translateX(18px)}
+    .status-pill{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+    .status-pill.on{background:#dcfce7;color:var(--success)}
+    .status-pill.off{background:#f3f4f6;color:#9ca3af}
+    .btn-del{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 10px;cursor:pointer;border-radius:3px;font-size:12px;transition:all .15s}
+    .btn-del:hover{border-color:var(--danger);color:var(--danger);background:#fef2f2}
+    .empty-state{text-align:center;padding:48px;color:var(--muted);font-size:13px;background:var(--surface);border:1px dashed var(--border);border-radius:4px}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:100}
+    .modal-backdrop.open{display:flex}
+    .modal{background:var(--surface);border-radius:6px;padding:28px;width:380px;border:1px solid var(--border)}
+    .modal h4{font-size:18px;font-weight:700;margin-bottom:20px}
+    .modal-footer{display:flex;gap:10px;margin-top:20px}
+    .modal-footer .btn{width:auto;flex:1}
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo">Flag<em>Sys</em> // ORG ADMIN</div>
+  <div class="header-right">
+    <span id="header-email"></span>
+    <button class="btn-logout" id="logout-btn" onclick="logout()" style="display:none">Logout</button>
+  </div>
+</header>
+<div class="tabs">
+  <div class="tab active" id="tab-auth" onclick="showTab('auth')">Account</div>
+  <div class="tab" id="tab-flags" onclick="showTab('flags')" style="display:none">Feature Flags</div>
+</div>
+<main>
+  <div class="view active" id="view-auth">
+    <div class="card" id="form-login">
+      <div class="card-title">Sign In</div>
+      <div class="card-sub">Access your organization's flag dashboard</div>
+      <div id="login-alert"></div>
+      <div class="field"><label>Email</label><input type="email" id="l-email" placeholder="admin@yourcompany.com"/></div>
+      <div class="field"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••"/></div>
+      <button class="btn" onclick="login()">Sign In</button>
+      <div class="link-row">Don't have an account? <a onclick="toggleForm('signup')">Sign up</a></div>
+    </div>
+    <div class="card" id="form-signup" style="display:none">
+      <div class="card-title">Create Account</div>
+      <div class="card-sub">Register as an Organization Admin</div>
+      <div id="signup-alert"></div>
+      <div class="field"><label>Email</label><input type="email" id="s-email" placeholder="you@company.com"/></div>
+      <div class="field"><label>Password</label><input type="password" id="s-pass" placeholder="Min. 6 characters"/></div>
+      <div class="field"><label>Organization</label><select id="s-org"><option value="">Loading...</option></select></div>
+      <button class="btn" onclick="signup()">Create Account</button>
+      <div class="link-row">Already have an account? <a onclick="toggleForm('login')">Sign in</a></div>
+    </div>
+  </div>
+  <div class="view" id="view-flags">
+    <div id="org-badge-container"></div>
+    <div class="flags-toolbar">
+      <h3>Feature Flags</h3>
+      <button class="btn-sm" onclick="openCreateModal()">+ New Flag</button>
+    </div>
+    <div id="flags-alert"></div>
+    <div class="flags-list" id="flags-list"><div class="empty-state">No flags yet.</div></div>
+  </div>
+</main>
+<div class="modal-backdrop" id="create-modal">
+  <div class="modal">
+    <h4>New Feature Flag</h4>
+    <div id="modal-alert"></div>
+    <div class="field"><label>Feature Key</label><input type="text" id="new-flag-key" placeholder="e.g. dark_mode"/></div>
+    <div class="field" style="display:flex;align-items:center;gap:12px">
+      <label style="margin-bottom:0">Enabled by default</label>
+      <label class="toggle"><input type="checkbox" id="new-flag-enabled"/><span class="slider"></span></label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn outline" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="createFlag()">Create Flag</button>
+    </div>
+  </div>
+</div>
+<script>
+  const API='';
+  let token=localStorage.getItem('admin_token'),user=null;
+  if(token){try{user=JSON.parse(atob(token.split('.')[1]));enterDashboard();}catch{token=null;}}
+  loadOrganizations();
+
+  async function login(){
+    const email=document.getElementById('l-email').value.trim();
+    const pass=document.getElementById('l-pass').value;
+    const al=document.getElementById('login-alert');al.innerHTML='';
+    try{
+      const res=await fetch(`${API}/api/admin/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+      const data=await res.json();
+      if(!res.ok){showAlert(al,data.error,'error');return;}
+      token=data.token;localStorage.setItem('admin_token',token);
+      user=JSON.parse(atob(token.split('.')[1]));enterDashboard();
+    }catch{showAlert(al,'Network error','error');}
+  }
+
+  async function signup(){
+    const email=document.getElementById('s-email').value.trim();
+    const pass=document.getElementById('s-pass').value;
+    const orgId=document.getElementById('s-org').value;
+    const al=document.getElementById('signup-alert');al.innerHTML='';
+    if(!orgId){showAlert(al,'Please select an organization','error');return;}
+    try{
+      const res=await fetch(`${API}/api/admin/signup`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass,organizationId:orgId})});
+      const data=await res.json();
+      if(!res.ok){showAlert(al,data.error,'error');return;}
+      showAlert(al,'Account created! Please sign in.','success');
+      setTimeout(()=>toggleForm('login'),1200);
+    }catch{showAlert(al,'Network error','error');}
+  }
+
+  function logout(){
+    localStorage.removeItem('admin_token');token=null;user=null;
+    document.getElementById('tab-flags').style.display='none';
+    document.getElementById('logout-btn').style.display='none';
+    document.getElementById('header-email').textContent='';
+    showTab('auth');
+  }
+
+  function enterDashboard(){
+    document.getElementById('header-email').textContent=user.email;
+    document.getElementById('logout-btn').style.display='';
+    document.getElementById('tab-flags').style.display='';
+    showTab('flags');loadFlags();
+  }
+
+  async function loadFlags(){
+    try{
+      const res=await fetch(`${API}/api/admin/flags`,{headers:{Authorization:`Bearer ${token}`}});
+      if(res.status===401){logout();return;}
+      const data=await res.json();
+      document.getElementById('org-badge-container').innerHTML=`<div class="org-badge">🏢 org id: ${esc(user.organizationId)}</div>`;
+      renderFlags(data);
+    }catch{}
+  }
+
+  function renderFlags(list){
+    const el=document.getElementById('flags-list');
+    if(!list.length){el.innerHTML='<div class="empty-state">No flags yet. Create your first one →</div>';return;}
+    el.innerHTML=list.map(f=>`
+      <div class="flag-card">
+        <div><div class="flag-key">${esc(f.featureKey)}</div><div class="flag-meta">Created ${new Date(f.createdAt).toLocaleDateString()}</div></div>
+        <div class="flag-actions">
+          <span class="status-pill ${f.enabled?'on':'off'}" id="pill-${f._id}">${f.enabled?'Enabled':'Disabled'}</span>
+          <label class="toggle"><input type="checkbox" ${f.enabled?'checked':''} onchange="toggleFlag('${f._id}',this.checked)"/><span class="slider"></span></label>
+          <button class="btn-del" onclick="deleteFlag('${f._id}')">Delete</button>
+        </div>
+      </div>`).join('');
+  }
+
+  async function toggleFlag(id,enabled){
+    try{
+      const res=await fetch(`${API}/api/admin/flags/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({enabled})});
+      if(!res.ok){loadFlags();return;}
+      const pill=document.getElementById(`pill-${id}`);
+      if(pill){pill.textContent=enabled?'Enabled':'Disabled';pill.className=`status-pill ${enabled?'on':'off'}`;}
+    }catch{loadFlags();}
+  }
+
+  async function deleteFlag(id){
+    if(!confirm('Delete this flag?'))return;
+    try{
+      const res=await fetch(`${API}/api/admin/flags/${id}`,{method:'DELETE',headers:{Authorization:`Bearer ${token}`}});
+      if(res.ok)loadFlags();
+    }catch{}
+  }
+
+  function openCreateModal(){
+    document.getElementById('new-flag-key').value='';
+    document.getElementById('new-flag-enabled').checked=false;
+    document.getElementById('modal-alert').innerHTML='';
+    document.getElementById('create-modal').classList.add('open');
+  }
+  function closeModal(){document.getElementById('create-modal').classList.remove('open');}
+
+  async function createFlag(){
+    const key=document.getElementById('new-flag-key').value.trim();
+    const enabled=document.getElementById('new-flag-enabled').checked;
+    const al=document.getElementById('modal-alert');al.innerHTML='';
+    if(!key){showAlert(al,'Feature key is required','error');return;}
+    try{
+      const res=await fetch(`${API}/api/admin/flags`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({featureKey:key,enabled})});
+      const data=await res.json();
+      if(!res.ok){showAlert(al,data.error,'error');return;}
+      closeModal();loadFlags();
+    }catch{showAlert(al,'Network error','error');}
+  }
+
+  async function loadOrganizations(){
+    try{
+      const res=await fetch(`${API}/api/flags/organizations`);
+      const data=await res.json();
+      const sel=document.getElementById('s-org');
+      sel.innerHTML=data.length
+        ?`<option value="">Select organization...</option>`+data.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')
+        :`<option value="">No organizations yet</option>`;
+    }catch{}
+  }
+
+  function toggleForm(which){
+    document.getElementById('form-login').style.display=which==='login'?'':'none';
+    document.getElementById('form-signup').style.display=which==='signup'?'':'none';
+    if(which==='signup')loadOrganizations();
+  }
+
+  function showTab(tab){
+    ['auth','flags'].forEach(t=>{
+      document.getElementById(`view-${t}`).classList.toggle('active',t===tab);
+      document.getElementById(`tab-${t}`).classList.toggle('active',t===tab);
+    });
+  }
+
+  document.getElementById('create-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+  function showAlert(el,msg,type){el.innerHTML=`<div class="alert ${type}">${esc(msg)}</div>`;}
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+</script>
+</body>
+</html>
