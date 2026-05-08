@@ -13,13 +13,15 @@
     .logo{font-family:var(--mono);font-weight:600;font-size:16px;letter-spacing:1px}
     .logo em{color:#a5b4fc;font-style:normal}
     .header-right{display:flex;align-items:center;gap:16px;font-size:12px;color:#a5b4fc}
-    .btn-logout{background:none;border:1px solid #4f46e5;color:#a5b4fc;padding:4px 12px;cursor:pointer;font-family:var(--sans);font-size:11px;transition:all .15s}
+    .btn-logout{background:none;border:1px solid #4f46e5;color:#a5b4fc;padding:4px 12px;cursor:pointer;font-family:var(--sans);font-size:11px;transition:all .15s;border-radius:3px}
     .btn-logout:hover{background:#4f46e5;color:#fff}
     .tabs{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 40px}
     .tab{padding:14px 20px;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);transition:all .15s}
     .tab.active{border-color:var(--accent2);color:var(--accent2)}
     main{max-width:900px;margin:0 auto;padding:32px 40px}
     .view{display:none}.view.active{display:block}
+
+    /* AUTH */
     .card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:32px;max-width:440px;margin:0 auto}
     .card-title{font-size:22px;font-weight:700;margin-bottom:4px}
     .card-sub{color:var(--muted);font-size:13px;margin-bottom:28px}
@@ -29,44 +31,55 @@
     input:focus,select:focus{border-color:var(--accent2)}
     .btn{background:var(--accent2);color:#fff;border:none;padding:10px 20px;font-family:var(--sans);font-weight:700;font-size:14px;cursor:pointer;border-radius:3px;transition:opacity .15s;width:100%}
     .btn:hover{opacity:.88}
-    .btn.outline{background:none;border:1px solid var(--accent2);color:var(--accent2)}
     .link-row{text-align:center;margin-top:16px;font-size:13px;color:var(--muted)}
     .link-row a{color:var(--accent2);cursor:pointer;text-decoration:none}
     .link-row a:hover{text-decoration:underline}
+
+    /* ALERTS */
     .alert{padding:9px 13px;border-radius:3px;font-size:13px;margin-bottom:14px}
     .alert.error{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}
     .alert.success{background:#f0fdf4;color:var(--success);border:1px solid #bbf7d0}
+
+    /* ORG BADGE */
     .org-badge{display:inline-flex;align-items:center;gap:6px;background:#eef2ff;border:1px solid #c7d2fe;color:var(--accent2);font-family:var(--mono);font-size:12px;padding:3px 10px;border-radius:2px;margin-bottom:24px}
-    .flags-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-    .flags-toolbar h3{font-size:18px;font-weight:700}
-    .btn-sm{background:var(--accent2);color:#fff;border:none;padding:7px 16px;font-family:var(--sans);font-weight:600;font-size:13px;cursor:pointer;border-radius:3px;transition:opacity .15s}
+
+    /* CREATE FLAG BOX — inline on page */
+    .create-box{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px 24px;margin-bottom:24px}
+    .create-box-title{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+    .create-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+    .create-row .field{margin-bottom:0;flex:1;min-width:160px}
+    .create-row .toggle-field{display:flex;align-items:center;gap:8px;padding-bottom:2px}
+    .create-row .toggle-label{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+    .btn-sm{background:var(--accent2);color:#fff;border:none;padding:9px 20px;font-family:var(--sans);font-weight:600;font-size:13px;cursor:pointer;border-radius:3px;transition:opacity .15s;white-space:nowrap}
     .btn-sm:hover{opacity:.88}
-    .flags-list{display:flex;flex-direction:column;gap:10px}
-    .flag-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
-    .flag-key{font-family:var(--mono);font-size:14px;font-weight:600}
-    .flag-meta{font-size:11px;color:var(--muted);margin-top:2px}
-    .flag-actions{display:flex;align-items:center;gap:12px}
-    .toggle{position:relative;width:42px;height:24px}
+
+    /* TOGGLE SWITCH */
+    .toggle{position:relative;width:42px;height:24px;flex-shrink:0}
     .toggle input{opacity:0;width:0;height:0}
     .slider{position:absolute;inset:0;background:#d1d5db;border-radius:24px;cursor:pointer;transition:background .2s}
     .slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:transform .2s}
     input:checked+.slider{background:var(--success)}
     input:checked+.slider::before{transform:translateX(18px)}
+
+    /* FLAGS LIST */
+    .flags-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .flags-header h3{font-size:18px;font-weight:700}
+    .flags-list{display:flex;flex-direction:column;gap:10px}
+    .flag-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;transition:box-shadow .15s}
+    .flag-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .flag-key{font-family:var(--mono);font-size:14px;font-weight:600}
+    .flag-meta{font-size:11px;color:var(--muted);margin-top:2px}
+    .flag-actions{display:flex;align-items:center;gap:12px}
     .status-pill{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
     .status-pill.on{background:#dcfce7;color:var(--success)}
     .status-pill.off{background:#f3f4f6;color:#9ca3af}
     .btn-del{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 10px;cursor:pointer;border-radius:3px;font-size:12px;transition:all .15s}
     .btn-del:hover{border-color:var(--danger);color:var(--danger);background:#fef2f2}
     .empty-state{text-align:center;padding:48px;color:var(--muted);font-size:13px;background:var(--surface);border:1px dashed var(--border);border-radius:4px}
-    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:100}
-    .modal-backdrop.open{display:flex}
-    .modal{background:var(--surface);border-radius:6px;padding:28px;width:380px;border:1px solid var(--border)}
-    .modal h4{font-size:18px;font-weight:700;margin-bottom:20px}
-    .modal-footer{display:flex;gap:10px;margin-top:20px}
-    .modal-footer .btn{width:auto;flex:1}
   </style>
 </head>
 <body>
+
 <header>
   <div class="logo">Flag<em>Sys</em> // ORG ADMIN</div>
   <div class="header-right">
@@ -74,12 +87,16 @@
     <button class="btn-logout" id="logout-btn" onclick="logout()" style="display:none">Logout</button>
   </div>
 </header>
+
 <div class="tabs">
   <div class="tab active" id="tab-auth" onclick="showTab('auth')">Account</div>
   <div class="tab" id="tab-flags" onclick="showTab('flags')" style="display:none">Feature Flags</div>
 </div>
+
 <main>
+  <!-- AUTH VIEW -->
   <div class="view active" id="view-auth">
+    <!-- LOGIN -->
     <div class="card" id="form-login">
       <div class="card-title">Sign In</div>
       <div class="card-sub">Access your organization's flag dashboard</div>
@@ -89,6 +106,8 @@
       <button class="btn" onclick="login()">Sign In</button>
       <div class="link-row">Don't have an account? <a onclick="toggleForm('signup')">Sign up</a></div>
     </div>
+
+    <!-- SIGNUP -->
     <div class="card" id="form-signup" style="display:none">
       <div class="card-title">Create Account</div>
       <div class="card-sub">Register as an Organization Admin</div>
@@ -100,33 +119,44 @@
       <div class="link-row">Already have an account? <a onclick="toggleForm('login')">Sign in</a></div>
     </div>
   </div>
+
+  <!-- FLAGS VIEW -->
   <div class="view" id="view-flags">
     <div id="org-badge-container"></div>
-    <div class="flags-toolbar">
+
+    <!-- CREATE FLAG INLINE -->
+    <div class="create-box">
+      <div class="create-box-title">Add New Feature Flag</div>
+      <div id="create-flag-alert"></div>
+      <div class="create-row">
+        <div class="field">
+          <label>Feature Key</label>
+          <input type="text" id="new-flag-key" placeholder="e.g. dark_mode"/>
+        </div>
+        <div class="toggle-field">
+          <span class="toggle-label">Enabled</span>
+          <label class="toggle">
+            <input type="checkbox" id="new-flag-enabled"/>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <button class="btn-sm" onclick="createFlag()">+ Add Flag</button>
+      </div>
+    </div>
+
+    <!-- FLAGS LIST -->
+    <div class="flags-header">
       <h3>Feature Flags</h3>
-      <button class="btn-sm" onclick="openCreateModal()">+ New Flag</button>
     </div>
     <div id="flags-alert"></div>
-    <div class="flags-list" id="flags-list"><div class="empty-state">No flags yet.</div></div>
+    <div class="flags-list" id="flags-list">
+      <div class="empty-state">No flags yet. Add your first one above →</div>
+    </div>
   </div>
 </main>
-<div class="modal-backdrop" id="create-modal">
-  <div class="modal">
-    <h4>New Feature Flag</h4>
-    <div id="modal-alert"></div>
-    <div class="field"><label>Feature Key</label><input type="text" id="new-flag-key" placeholder="e.g. dark_mode"/></div>
-    <div class="field" style="display:flex;align-items:center;gap:12px">
-      <label style="margin-bottom:0">Enabled by default</label>
-      <label class="toggle"><input type="checkbox" id="new-flag-enabled"/><span class="slider"></span></label>
-    </div>
-    <div class="modal-footer">
-      <button class="btn outline" onclick="closeModal()">Cancel</button>
-      <button class="btn" onclick="createFlag()">Create Flag</button>
-    </div>
-  </div>
-</div>
+
 <script>
-  const API='';
+  const API='https://multi-tenant-feature-flag-system.onrender.comm';
   let token=localStorage.getItem('admin_token'),user=null;
   if(token){try{user=JSON.parse(atob(token.split('.')[1]));enterDashboard();}catch{token=null;}}
   loadOrganizations();
@@ -140,7 +170,8 @@
       const data=await res.json();
       if(!res.ok){showAlert(al,data.error,'error');return;}
       token=data.token;localStorage.setItem('admin_token',token);
-      user=JSON.parse(atob(token.split('.')[1]));enterDashboard();
+      user=JSON.parse(atob(token.split('.')[1]));
+      enterDashboard();
     }catch{showAlert(al,'Network error','error');}
   }
 
@@ -171,7 +202,8 @@
     document.getElementById('header-email').textContent=user.email;
     document.getElementById('logout-btn').style.display='';
     document.getElementById('tab-flags').style.display='';
-    showTab('flags');loadFlags();
+    showTab('flags');
+    loadFlags();
   }
 
   async function loadFlags(){
@@ -179,23 +211,46 @@
       const res=await fetch(`${API}/api/admin/flags`,{headers:{Authorization:`Bearer ${token}`}});
       if(res.status===401){logout();return;}
       const data=await res.json();
-      document.getElementById('org-badge-container').innerHTML=`<div class="org-badge">🏢 org id: ${esc(user.organizationId)}</div>`;
+      document.getElementById('org-badge-container').innerHTML=
+        `<div class="org-badge">🏢 org id: ${esc(user.organizationId)}</div>`;
       renderFlags(data);
     }catch{}
   }
 
   function renderFlags(list){
     const el=document.getElementById('flags-list');
-    if(!list.length){el.innerHTML='<div class="empty-state">No flags yet. Create your first one →</div>';return;}
+    if(!list.length){el.innerHTML='<div class="empty-state">No flags yet. Add your first one above →</div>';return;}
     el.innerHTML=list.map(f=>`
       <div class="flag-card">
-        <div><div class="flag-key">${esc(f.featureKey)}</div><div class="flag-meta">Created ${new Date(f.createdAt).toLocaleDateString()}</div></div>
+        <div>
+          <div class="flag-key">${esc(f.featureKey)}</div>
+          <div class="flag-meta">Created ${new Date(f.createdAt).toLocaleDateString()}</div>
+        </div>
         <div class="flag-actions">
           <span class="status-pill ${f.enabled?'on':'off'}" id="pill-${f._id}">${f.enabled?'Enabled':'Disabled'}</span>
-          <label class="toggle"><input type="checkbox" ${f.enabled?'checked':''} onchange="toggleFlag('${f._id}',this.checked)"/><span class="slider"></span></label>
+          <label class="toggle">
+            <input type="checkbox" ${f.enabled?'checked':''} onchange="toggleFlag('${f._id}',this.checked)"/>
+            <span class="slider"></span>
+          </label>
           <button class="btn-del" onclick="deleteFlag('${f._id}')">Delete</button>
         </div>
       </div>`).join('');
+  }
+
+  async function createFlag(){
+    const key=document.getElementById('new-flag-key').value.trim();
+    const enabled=document.getElementById('new-flag-enabled').checked;
+    const al=document.getElementById('create-flag-alert');al.innerHTML='';
+    if(!key){showAlert(al,'Feature key is required','error');return;}
+    try{
+      const res=await fetch(`${API}/api/admin/flags`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({featureKey:key,enabled})});
+      const data=await res.json();
+      if(!res.ok){showAlert(al,data.error,'error');return;}
+      document.getElementById('new-flag-key').value='';
+      document.getElementById('new-flag-enabled').checked=false;
+      showAlert(al,`Flag "${data.featureKey}" created!`,'success');
+      loadFlags();
+    }catch{showAlert(al,'Network error','error');}
   }
 
   async function toggleFlag(id,enabled){
@@ -213,27 +268,6 @@
       const res=await fetch(`${API}/api/admin/flags/${id}`,{method:'DELETE',headers:{Authorization:`Bearer ${token}`}});
       if(res.ok)loadFlags();
     }catch{}
-  }
-
-  function openCreateModal(){
-    document.getElementById('new-flag-key').value='';
-    document.getElementById('new-flag-enabled').checked=false;
-    document.getElementById('modal-alert').innerHTML='';
-    document.getElementById('create-modal').classList.add('open');
-  }
-  function closeModal(){document.getElementById('create-modal').classList.remove('open');}
-
-  async function createFlag(){
-    const key=document.getElementById('new-flag-key').value.trim();
-    const enabled=document.getElementById('new-flag-enabled').checked;
-    const al=document.getElementById('modal-alert');al.innerHTML='';
-    if(!key){showAlert(al,'Feature key is required','error');return;}
-    try{
-      const res=await fetch(`${API}/api/admin/flags`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({featureKey:key,enabled})});
-      const data=await res.json();
-      if(!res.ok){showAlert(al,data.error,'error');return;}
-      closeModal();loadFlags();
-    }catch{showAlert(al,'Network error','error');}
   }
 
   async function loadOrganizations(){
@@ -260,7 +294,6 @@
     });
   }
 
-  document.getElementById('create-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
   function showAlert(el,msg,type){el.innerHTML=`<div class="alert ${type}">${esc(msg)}</div>`;}
   function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>

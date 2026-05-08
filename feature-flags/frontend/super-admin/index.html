@@ -168,7 +168,7 @@
 </div>
 
 <script>
-  const API='';
+  const API='https://multi-tenant-feature-flag-system.onrender.com';
   let token=localStorage.getItem('sa_token');
   if(token){try{JSON.parse(atob(token.split('.')[1]));enterDashboard();}catch{token=null;}}
 
@@ -268,4 +268,4 @@
   function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
 </body>
-</html>
+</html>git push -u origin main
