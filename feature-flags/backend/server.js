@@ -29,7 +29,7 @@ app.use(
 
 // Default route
 app.get("/", (req, res) => {
-  res.redirect("/user");
+  res.redirect("/super-admin");
 });
 
 // ── API Routes ─────────────────────────────
