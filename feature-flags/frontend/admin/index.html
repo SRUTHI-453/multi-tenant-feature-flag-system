@@ -156,7 +156,7 @@
 </main>
 
 <script>
-  const API='https://multi-tenant-feature-flag-system.onrender.comm';
+  const API='https://multi-tenant-feature-flag-system.onrender.com';
   let token=localStorage.getItem('admin_token'),user=null;
   if(token){try{user=JSON.parse(atob(token.split('.')[1]));enterDashboard();}catch{token=null;}}
   loadOrganizations();
