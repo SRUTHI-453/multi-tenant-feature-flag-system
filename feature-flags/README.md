@@ -1,150 +1,617 @@
 # Feature Flag Management System
 
-Multi-tenant feature flag system — Node.js + Express backend, MongoDB (Mongoose), three plain HTML frontends.
+A multi-tenant SaaS-like Feature Flag Management System built using Node.js, Express, MongoDB Atlas, and plain HTML/CSS/JavaScript.
+
+The system supports:
+
+- Super Admin management
+- Organization-based feature flag management
+- Public feature flag validation for end users
 
 ---
 
-## Project Structure
+# 🚀 Live Deployment
 
-```
-feature-flags/
-├── backend/
-│   ├── server.js               # Express entry point
-│   ├── config.js               # JWT, super admin creds, port
-│   ├── .env                    # Environment variables (edit this!)
-│   ├── db/
-│   │   └── connect.js          # MongoDB connection
-│   ├── models/
-│   │   ├── Organization.js     # Org schema
-│   │   ├── User.js             # User schema (org_admin role)
-│   │   └── FeatureFlag.js      # Flag schema (unique per org)
-│   ├── middleware/
-│   │   └── auth.js             # JWT verify + role guard
-│   └── routes/
-│       ├── superAdmin.js       # /api/super-admin/*
-│       ├── admin.js            # /api/admin/*
-│       └── flags.js            # /api/flags/* (public)
-└── frontend/
-    ├── super-admin/index.html
-    ├── admin/index.html
-    └── user/index.html
-```
+## 🌐 Live URLs
+
+| Application | Live URL |
+|---|---|
+| Main Application | https://multi-tenant-feature-flag-system.onrender.com |
+| Super Admin | https://multi-tenant-feature-flag-system.onrender.com/super-admin |
+| Org Admin | https://multi-tenant-feature-flag-system.onrender.com/admin |
+| End User | https://multi-tenant-feature-flag-system.onrender.com/user |
 
 ---
 
-## MongoDB Setup (Atlas — Free Tier)
+# 📦 Tech Stack
 
-1. Go to https://www.mongodb.com/atlas and create a free account
-2. Create a free **M0 cluster**
-3. Under **Database Access** → Add a database user (username + password)
-4. Under **Network Access** → Add IP: `0.0.0.0/0` (allow all, for dev)
-5. Click **Connect** → **Drivers** → copy the connection string
-6. Paste it in `backend/.env`:
+| Layer | Technology |
+|---|---|
+| Backend | Node.js + Express |
+| Database | MongoDB Atlas + Mongoose |
+| Authentication | JWT + bcryptjs |
+| Frontend | HTML + CSS + JavaScript |
+| Deployment | Render |
 
-```env
-MONGO_URI=mongodb+srv://youruser:yourpassword@cluster0.xxxxx.mongodb.net/feature_flags?retryWrites=true&w=majority
-```
+---
 
-### Local MongoDB (alternative)
-```env
-MONGO_URI=mongodb://localhost:27017/feature_flags
+# ⚙️ Local Setup
+
+## Clone Repository
+
+```bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/feature-flags.git
+cd feature-flags
 ```
 
 ---
 
-## Quick Start
+## Install Backend Dependencies
 
 ```bash
 cd backend
 npm install
-# Edit .env with your MONGO_URI first!
+```
+
+---
+
+## Start Server
+
+```bash
 node server.js
 ```
 
-Open:
-| App          | URL                               |
-|--------------|-----------------------------------|
-| End User     | http://localhost:3000/user        |
-| Org Admin    | http://localhost:3000/admin       |
-| Super Admin  | http://localhost:3000/super-admin |
+Server runs on:
 
----
-
-## Super Admin Credentials
-
-| Field    | Value                   |
-|----------|-------------------------|
-| Email    | `superadmin@flagsys.io` |
-| Password | `Admin@1234`            |
-
----
-
-## API Reference
-
-### Super Admin (`/api/super-admin`)
-| Method | Path              | Auth         | Description        |
-|--------|-------------------|--------------|--------------------|
-| POST   | `/login`          | None         | Login              |
-| POST   | `/organizations`  | super_admin  | Create org         |
-| GET    | `/organizations`  | super_admin  | List all orgs      |
-
-### Org Admin (`/api/admin`)
-| Method | Path          | Auth      | Description     |
-|--------|---------------|-----------|-----------------|
-| POST   | `/signup`     | None      | Register admin  |
-| POST   | `/login`      | None      | Login           |
-| GET    | `/flags`      | org_admin | List flags      |
-| POST   | `/flags`      | org_admin | Create flag     |
-| PATCH  | `/flags/:id`  | org_admin | Update flag     |
-| DELETE | `/flags/:id`  | org_admin | Delete flag     |
-
-### Public (`/api/flags`)
-| Method | Path                                             | Auth | Description        |
-|--------|--------------------------------------------------|------|--------------------|
-| GET    | `/check?organizationId=...&featureKey=...`       | None | Check flag status  |
-| GET    | `/organizations`                                 | None | List orgs for UI   |
-
----
-
-## Data Models
-
-### Organization
-```js
-{ name: String (unique), createdAt, updatedAt }
-```
-
-### User
-```js
-{ email: String (unique), passwordHash: String, role: "org_admin", organization: ObjectId → Organization }
-```
-
-### FeatureFlag
-```js
-{ featureKey: String, enabled: Boolean, organization: ObjectId → Organization, createdBy: ObjectId → User }
-// Compound unique index: { featureKey, organization }
+```bash
+http://localhost:3000
 ```
 
 ---
 
-## Design Decisions & Trade-offs
+# 🔐 Login Credentials
 
-| Decision | Reasoning |
+## 1. Super Admin
+
+| Field | Value |
 |---|---|
-| **MongoDB / Mongoose** | Schema flexibility, easy to run free on Atlas, natural JSON fit for flag data |
-| **JSON file → MongoDB** | Replaces the dev-only JSON file with real persistent NoSQL storage |
-| **Custom JWT auth** | Per spec — no third-party providers. bcrypt for password hashing, 8h token expiry |
-| **Static super admin creds** | Per spec — stored in `.env`, not in DB |
-| **Public flag-check endpoint** | Spec asks for a simple form experience; no end-user login required |
-| **Compound unique index on flags** | Prevents duplicate `featureKey` per org at the DB level, not just app level |
-| **passwordHash excluded from toJSON** | `User.toJSON()` strips the hash — never accidentally returned in API responses |
+| URL | https://multi-tenant-feature-flag-system.onrender.com/super-admin |
+| Email | superadmin@flagsys.io |
+| Password | Admin@1234 |
+
+> Super Admin credentials are hardcoded as per assignment requirements.
 
 ---
 
-## Self-grading
+## 2. Org Admin
 
-| Category                      | Score | Notes |
-|-------------------------------|-------|-------|
-| Performance                   | 7/10  | Indexed queries, no N+1 issues; no caching layer |
-| Readability & Maintainability | 8/10  | Clear separation: models / routes / middleware |
-| Stability                     | 7/10  | Input validation, proper HTTP codes, error handler; no rate limiting |
-| Testability                   | 8/10  | Thin routes, logic in models — easy to unit test with `jest` + `mongodb-memory-server` |
+| Field | Value |
+|---|---|
+| URL | https://multi-tenant-feature-flag-system.onrender.com/admin |
+| Email | alice@acme.com |
+| Password | pass123 |
+
+> Org Admins can also register through the Signup page.
+
+---
+
+## 3. End User
+
+| Field | Value |
+|---|---|
+| URL | https://multi-tenant-feature-flag-system.onrender.com/user |
+| Login Required | No |
+
+> End users can directly check feature availability without authentication.
+
+---
+
+# 🏗️ Application Architecture
+
+The project contains:
+
+- 1 Node.js backend
+- 3 separate frontend applications
+
+---
+
+# 📁 Project Structure
+
+```bash
+feature-flags/
+│
+├── backend/
+│   ├── server.js
+│   ├── config.js
+│   ├── package.json
+│   │
+│   ├── db/
+│   │   ├── connect.js
+│   │   └── database.js
+│   │
+│   ├── middleware/
+│   │   └── auth.js
+│   │
+│   ├── models/
+│   │   ├── Organization.js
+│   │   ├── User.js
+│   │   └── FeatureFlag.js
+│   │
+│   └── routes/
+│       ├── superAdmin.js
+│       ├── admin.js
+│       └── flags.js
+│
+└── frontend/
+    ├── super-admin/
+    │   └── index.html
+    │
+    ├── admin/
+    │   └── index.html
+    │
+    └── user/
+        └── index.html
+```
+
+---
+
+# 👥 Roles & Permissions
+
+## 1. Super Admin
+
+Capabilities:
+
+- Login using static credentials
+- Create organizations
+- View all organizations
+
+---
+
+## 2. Organization Admin
+
+Capabilities:
+
+- Sign up
+- Login
+- Create feature flags
+- Enable / Disable feature flags
+- Delete feature flags
+- Manage organization-specific flags
+
+---
+
+## 3. End User
+
+Capabilities:
+
+- Select organization
+- Enter feature key
+- Check whether feature is enabled or disabled
+
+---
+
+# 🔑 Authentication Flow
+
+## Super Admin Authentication
+
+- Uses static credentials from `config.js`
+- JWT token generated after login
+
+---
+
+## Org Admin Authentication
+
+- Password hashed using bcryptjs
+- JWT token generated after login
+- Role stored as `org_admin`
+
+---
+
+## End User
+
+- No authentication required
+- Public read-only endpoint
+
+---
+
+# 🗄️ MongoDB Atlas Configuration
+
+## Database Details
+
+| Field | Value |
+|---|---|
+| Database | feature_flags |
+| Cluster | cluster0.rnsiukt.mongodb.net |
+
+---
+
+## MongoDB Connection
+
+```js
+mongoose.connect(process.env.MONGO_URI);
+```
+
+---
+
+# 📡 API Documentation
+
+# Super Admin APIs
+
+Base URL:
+
+```bash
+/api/super-admin
+```
+
+---
+
+## Login
+
+### Endpoint
+
+```http
+POST /api/super-admin/login
+```
+
+### Request Body
+
+```json
+{
+  "email": "superadmin@flagsys.io",
+  "password": "Admin@1234"
+}
+```
+
+### Response
+
+```json
+{
+  "token": "JWT_TOKEN",
+  "role": "super_admin",
+  "email": "superadmin@flagsys.io"
+}
+```
+
+---
+
+## Create Organization
+
+### Endpoint
+
+```http
+POST /api/super-admin/organizations
+```
+
+### Headers
+
+```http
+Authorization: Bearer TOKEN
+```
+
+### Request Body
+
+```json
+{
+  "name": "Acme Corp"
+}
+```
+
+---
+
+## Get Organizations
+
+### Endpoint
+
+```http
+GET /api/super-admin/organizations
+```
+
+### Headers
+
+```http
+Authorization: Bearer TOKEN
+```
+
+---
+
+# Org Admin APIs
+
+Base URL:
+
+```bash
+/api/admin
+```
+
+---
+
+## Signup
+
+### Endpoint
+
+```http
+POST /api/admin/signup
+```
+
+### Request Body
+
+```json
+{
+  "email": "admin@acme.com",
+  "password": "pass123",
+  "organizationId": "ORG_ID"
+}
+```
+
+---
+
+## Login
+
+### Endpoint
+
+```http
+POST /api/admin/login
+```
+
+### Request Body
+
+```json
+{
+  "email": "admin@acme.com",
+  "password": "pass123"
+}
+```
+
+---
+
+## Get Feature Flags
+
+### Endpoint
+
+```http
+GET /api/admin/flags
+```
+
+### Headers
+
+```http
+Authorization: Bearer TOKEN
+```
+
+---
+
+## Create Feature Flag
+
+### Endpoint
+
+```http
+POST /api/admin/flags
+```
+
+### Headers
+
+```http
+Authorization: Bearer TOKEN
+```
+
+### Request Body
+
+```json
+{
+  "featureKey": "dark_mode",
+  "enabled": true
+}
+```
+
+---
+
+## Update Feature Flag
+
+### Endpoint
+
+```http
+PATCH /api/admin/flags/:id
+```
+
+### Request Body
+
+```json
+{
+  "enabled": false
+}
+```
+
+---
+
+## Delete Feature Flag
+
+### Endpoint
+
+```http
+DELETE /api/admin/flags/:id
+```
+
+---
+
+# Public APIs
+
+Base URL:
+
+```bash
+/api/flags
+```
+
+---
+
+## Check Feature Status
+
+### Endpoint
+
+```http
+GET /api/flags/check
+```
+
+### Query Params
+
+```bash
+organizationId=ORG_ID
+featureKey=dark_mode
+```
+
+### Example
+
+```bash
+/api/flags/check?organizationId=123&featureKey=dark_mode
+```
+
+### Response
+
+```json
+{
+  "organizationId": "123",
+  "organizationName": "Acme Corp",
+  "featureKey": "dark_mode",
+  "enabled": true,
+  "exists": true
+}
+```
+
+---
+
+## Get Organizations
+
+### Endpoint
+
+```http
+GET /api/flags/organizations
+```
+
+---
+
+# 🧠 Database Models
+
+# Organization Model
+
+```js
+{
+  name: String,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+---
+
+# User Model
+
+```js
+{
+  email: String,
+  passwordHash: String,
+  role: "org_admin",
+  organization: ObjectId,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+---
+
+# Feature Flag Model
+
+```js
+{
+  featureKey: String,
+  enabled: Boolean,
+  organization: ObjectId,
+  createdBy: ObjectId,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+---
+
+# 🔒 Security Features
+
+- JWT Authentication
+- Password hashing using bcryptjs
+- Role-based authorization
+- Organization-level data isolation
+- Protected admin APIs
+- MongoDB schema validation
+
+---
+
+# ✨ Key Features
+
+- Multi-tenant architecture
+- Role-based access control
+- Public feature validation
+- Responsive UI
+- Persistent MongoDB storage
+- Feature toggle management
+- Organization isolation
+- RESTful API design
+
+---
+
+# 🎯 Feature Flag Flow
+
+## Step 1
+
+Super Admin creates organization
+
+↓
+
+## Step 2
+
+Org Admin signs up using organization
+
+↓
+
+## Step 3
+
+Org Admin logs in
+
+↓
+
+## Step 4
+
+Org Admin creates feature flags
+
+↓
+
+## Step 5
+
+End User checks whether feature is enabled
+
+---
+
+# 📌 Design Decisions
+
+| Decision | Reason |
+|---|---|
+| MongoDB Atlas | Easy cloud deployment |
+| Plain HTML/CSS/JS | Lightweight frontend |
+| JWT Authentication | Custom auth per assignment |
+| Static Super Admin | Assignment requirement |
+| Public User API | Simple feature validation |
+| Organization-scoped flags | Multi-tenant isolation |
+
+---
+
+# 📈 Self Evaluation
+
+| Category | Score |
+|---|---|
+| Code Structure | 8/10 |
+| Readability | 8/10 |
+| Performance | 7/10 |
+| Maintainability | 8/10 |
+| API Design | 8/10 |
+
+---
+
+# 👩‍💻 Developed By
+
+Sruthi R
